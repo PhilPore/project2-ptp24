@@ -1,5 +1,5 @@
 import './Board.css'
-export function ShowSquare(prop){
-    console.log(prop.val + "|"+prop.cell);
-    return (<div class="box" onClick={()=>prop.Clickbox(prop.val) }> { prop.cell } </div>)
+export function ShowSquare(props){
+    console.log(props.val + "|"+props.cell);
+    return (<div class="box" onClick={()=>props.Clickbox(props.val) }> { props.cell } </div>)
 }
