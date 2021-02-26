@@ -33,15 +33,16 @@ export function DispBoard () {
       }
       
       else if ((board[3] == marker && board[0] == marker) || (board[4] == marker && board[2] == marker)){
-        
+        console.log("We have a winner!");
       }
      
-        
+    }
+    else if (last_ind == 1 || last_ind == 4 || last_ind == 7){
+      if (board[last_ind-1] == marker && board[last_ind+1] == marker){
+        console.log("We have a winner!")
       }
-        
-        
-      }
-  
+    }
+    
   for(i=0; i<9;i++){
       if (board[i] !=" " || i == last_ind){
         fillcount+=1;
@@ -49,8 +50,12 @@ export function DispBoard () {
     }
     if (fillcount==9){
       console.log("Draw!");
-    }
-  }
+    }      
+        
+}
+  
+  
+  
   
   
   
