@@ -14,10 +14,23 @@ export function DispBoard () {
   const [turn,setTurn] = useState(0);
   const [stroke, setStroke] = useState(0) //logic is that every 3 clicks there is a probability of a winning move
   const [Win,setWin] = useState(0); //1 is a win, -1 is draw.
-  
-  
-  
-  
+  const inputRef = useRef(null);
+  const [Users, setUsers] =  useState([])
+  var is_User = false; //if this is false that means no one logged in.
+  function Logged(){
+    console.log("In logged function");
+    if (inputRef != null  && !is_User ) {
+      const username = inputRef.current.value;
+      
+      is_User = true
+    console.log("Is user now: " + is_User);
+    console.log("username: "+username);
+    console.log("Now emitting to socket, username");
+     socket.emit('login',{user:username})
+      
+    }
+    
+  }
   
   function BoxClicked(value){
     console.log(value + " Button clicked");
@@ -95,9 +108,13 @@ export function DispBoard () {
     console.log("upd: Turn is "+turn);
     });
   });
+  
+  
     console.log("EEE"+end_message);
     return (
   <div>
+  Enter Username: <input ref={inputRef} type="text" />
+  <button onClick={Logged}>Login</button>
   <div class="board">
   {board.map((cellval,index)=>
     <ShowSquare Clickbox={BoxClicked} val={index} cell = {cellval}  />
@@ -105,7 +122,7 @@ export function DispBoard () {
     
     </div>
       <p><br/>{end_mes} </p>
-      <button onClick={() => window.location.reload(false)}>Click to restart game (warning, all users will need to refresh)!</button>
+      <button onClick={() => window.location.reload(false)}>Click to restart game (warning, all users will need to refresh if they want to keep watching/playing)!</button>
     </div>
     
     
