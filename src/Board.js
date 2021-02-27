@@ -15,21 +15,25 @@ export function DispBoard () {
   const [stroke, setStroke] = useState(0) //logic is that every 3 clicks there is a probability of a winning move
   const [Win,setWin] = useState(0); //1 is a win, -1 is draw.
   const inputRef = useRef(null);
-  const [Users, setUsers] =  useState([])
+  const [Users, setUsers] =  useState([]) //index 0 and 1 are player 1 and player 2, turns can alternate by doing a modulo 2 op 
   var is_User = false; //if this is false that means no one logged in.
+  var Client_Name= undefined;
+  const [Player,setPlayer] = useState('');
+  
   function Logged(){
     console.log("In logged function");
     if (inputRef != null  && !is_User ) {
       const username = inputRef.current.value;
-      
+      Client_Name = username
       is_User = true
+      setPlayer(username);
     console.log("Is user now: " + is_User);
     console.log("username: "+username);
     console.log("Now emitting to socket, username");
      socket.emit('login',{user:username})
       
     }
-    
+    console.log("Client name is: "+Client_Name);
   }
   
   function BoxClicked(value){
@@ -73,7 +77,7 @@ export function DispBoard () {
     console.log("Win condition is: "+Win);
     // check the win condition to  format message. 
      if (checkcond == 1){
-      end_message = "A Winner has been decided. Please restart the game to continue playing."
+      end_message = Player+" has won. Please restart the game to continue playing."
       set_end(end_message);
     }
     else if (checkcond == -1){
@@ -92,6 +96,12 @@ export function DispBoard () {
   }
   
   useEffect(() => {
+    socket.on('login',(user_types)=> {
+      console.log("Login data recieved");
+      console.log(user_types);
+    },[]);
+    
+    //update board
     socket.on('cell', (data) => {
       console.log("cell Data recieved!");
       console.log(data);
@@ -107,7 +117,7 @@ export function DispBoard () {
     end_message = data.e_mes;
     console.log("upd: Turn is "+turn);
     });
-  });
+  },[]);
   
   
     console.log("EEE"+end_message);
