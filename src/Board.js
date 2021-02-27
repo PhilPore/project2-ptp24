@@ -22,6 +22,10 @@ export function DispBoard () {
   function BoxClicked(value){
     console.log(value + " Button clicked");
     console.log("Turn in funct is: "+turn)
+    if (board[value] !=" "){
+      console.log("Uh oh. Stinky. Someone tried to reclick/overwrite. No no no. Try again babe.");
+      return;
+    }
     if (Win == 1){
       console.log("Someone won. Terminating function.");
       return;
@@ -101,7 +105,7 @@ export function DispBoard () {
     
     </div>
       <p><br/>{end_mes} </p>
-
+      <button onClick={() => window.location.reload(false)}>Click to restart game (warning, all users will need to refresh)!</button>
     </div>
     
     
