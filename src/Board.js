@@ -40,7 +40,29 @@ export function DispBoard () {
     else if (last_ind == 1 || last_ind == 4 || last_ind == 7){
       if (board[last_ind-1] == marker && board[last_ind+1] == marker){
         console.log("We have a winner!")
+        }
+      else if (last_ind == 4){
+        if ((board[0] == marker && board[8] == marker) || (board[2] == marker && board[6] == marker)){
+          console.log("We have a winner!")
+        }
       }
+    }
+    else if (last_ind == 2 || last_ind == 5 || last_ind == 8){
+      if (board[last_ind-1] == marker && board[last_ind-2] == marker){
+        console.log("We have a winner!");
+      }
+      else if (last_ind == 2){
+        if ((board[4] == marker && board[6] == marker) || (board[5]==marker && board[8] == marker )){
+          console.log("We have a winner");
+        }
+      }
+       else if (last_ind == 8){
+         if ((board[4] == marker && board[0] == marker) || (board[5]==marker && board[2] == marker )){
+          console.log("We have a winner");
+        }
+         
+       }
+      
     }
     
   for(i=0; i<9;i++){
@@ -50,11 +72,11 @@ export function DispBoard () {
     }
     if (fillcount==9){
       console.log("Draw!");
-    }      
+      }      
         
-}
+  }
   
-  
+    
   
   
   
@@ -82,11 +104,12 @@ export function DispBoard () {
     
     //add function here to do checks
     //CheckEnd(value,marker);
+    CheckEnd(value,marker);
     const ind_val = value;
     console.log("Emitting: "+ ind_val+" | "+board[ind_val]);
     socket.emit('cell',{pos:ind_val,bcell:marker,upd_tur:turn+1 });
     console.log("Data emitted.");
-    CheckEnd(value,marker);
+    
 
   }
   
