@@ -18,6 +18,7 @@ Run `echo "DANGEROUSLY_DISABLE_HOST_CHECK=true" > .env.development.local` in the
 
 ## Known Problem:
 * List of individuals is displayed before someone logs in. This is due to JSX elements being very whiney when it comes to things being next to them. Will look into ways of handling this.
+* List of users will not clear, requires the server to be rebooted to do so. This can be solved via having an emit after a restart. This will clear the list and allow the users to log in normally.
 
 ## To add:
 * An alert when either someone joins in, or when it is someone's turn. I think that appease most people who don't know if they're going or not. 
