@@ -12,22 +12,23 @@ export function DispBoard () {
   const [end_mes, set_end] = useState("");
   const [board,setBoard] = useState([" "," "," "," "," "," "," "," "," "]);
   const [turn,setTurn] = useState(0);
-  const [stroke, setStroke] = useState(0) //logic is that every 3 clicks there is a probability of a winning move
   const [Win,setWin] = useState(0); //1 is a win, -1 is draw.
   const inputRef = useRef(null);
-  const [Users, setUsers] =  useState([]) //index 0 and 1 are player 1 and player 2, turns can alternate by doing a modulo 2 op 
-  var is_User = false; //if this is false that means no one logged in.
+  const [Users, setUsers] =  useState([]);
+  
+  //index 0 and 1 are player 1 and player 2, turns can alternate by doing a modulo 2 op 
+  const [user_logged,set_log] = useState(false); //if this is false that means no one logged in.
   var Client_Name= undefined;
   const [Player,setPlayer] = useState('');
   
   function Logged(){
     console.log("In logged function");
-    if (inputRef != null  && !is_User ) {
+    if (inputRef != null  && !user_logged ) {
       const username = inputRef.current.value;
       Client_Name = username
-      is_User = true
+      set_log((prevlog)=>{return true;})
       setPlayer(username);
-    console.log("Is user now: " + is_User);
+    console.log("Is user now: " + user_logged);
     console.log("username: "+username);
     console.log("Now emitting to socket, username");
      socket.emit('login',{user:username})
@@ -53,11 +54,15 @@ export function DispBoard () {
       
     }
     console.log(turn);
-    if (turn%2 === 1){
+    if (turn%2 === 1 && Player == Users[1]){
     marker = 'O';
     }
-    else{
+    else if (turn%2 === 0 && Player == Users[0]){
     marker='X';
+    }
+    else{
+      console.log("AINT YOUR TURN HOMEY");
+      return;
     }
   setTurn(turn+1);
   console.log(turn);
@@ -99,6 +104,9 @@ export function DispBoard () {
     socket.on('login',(user_types)=> {
       console.log("Login data recieved");
       console.log(user_types);
+      setUsers(user_types);
+      console.log(Users);
+      
     },[]);
     
     //update board
@@ -125,12 +133,18 @@ export function DispBoard () {
   <div>
   Enter Username: <input ref={inputRef} type="text" />
   <button onClick={Logged}>Login</button>
+  <div>
+  <ul> {Users.map((uses,index)=> <li>{uses} </li>)} </ul>
+  </div>
+  { user_logged === true ? (
+  
   <div class="board">
   {board.map((cellval,index)=>
     <ShowSquare Clickbox={BoxClicked} val={index} cell = {cellval}  />
   )}
     
     </div>
+      ): null}
       <p><br/>{end_mes} </p>
       <button onClick={() => window.location.reload(false)}>Click to restart game (warning, all users will need to refresh if they want to keep watching/playing)!</button>
     </div>

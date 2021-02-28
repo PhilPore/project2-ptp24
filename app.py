@@ -3,7 +3,7 @@ from flask import Flask, send_from_directory, json, session
 from flask_socketio import SocketIO
 from flask_cors import CORS
 
-user_types = { 'X' : None, 'O': None, 'spect':[]} #user list
+user_types = [] #user list
 
 app = Flask(__name__, static_folder='./build/static')
 
@@ -34,6 +34,9 @@ def on_disconnect():
 @socketio.on('login')
 def on_log(data): #logic to check dictionary
     print(str(data))
+    if data['user'] not in user_types:
+        user_types.append(data['user'])
+    '''
     if user_types['X'] == None:
         user_types['X'] = data['user']
     elif user_types['O'] == None:
@@ -41,7 +44,7 @@ def on_log(data): #logic to check dictionary
     else:
         if data['user'] != user_types['X'] or data['user'] != user_types['O']:
             user_types['spect'].append(data['user'])
-    print(user_types)
+    print(user_types)'''
     socketio.emit('login', user_types, broadcast=True, include_self=True)
 # When a client emits the event 'chat' to the server, this function is run
 # 'chat' is a custom event name that we just decided
