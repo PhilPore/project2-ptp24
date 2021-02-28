@@ -6,6 +6,14 @@
   grid-template-rows: repeat(3, 1fr); /* Total vertical space broken into 3 rows */
 }
 
+div {
+	background-color: #545662;
+
+}
+
 .box {
   border: 1px solid black; /* Shows the lines in the CSS grid */
+  text-align: center;
+  font-size: 50px;
+
 }
