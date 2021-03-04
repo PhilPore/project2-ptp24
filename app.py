@@ -47,6 +47,13 @@ def on_chat(data): # data is whatever arg you pass in your emit call on client
     # the client that emmitted the event that triggered this function
     socketio.emit('cell',  data, broadcast=True, include_self=False)
 
+@socketio.on('end')
+def game_over(data):
+    print(str(data))
+    user_types.clear()
+    print("Users cleared.")
+    print(user_types)
+
 # Note that we don't call app.run anymore. We call socketio.run with app arg
 socketio.run(
     app,

@@ -37,6 +37,13 @@ export function DispBoard () {
     console.log("Client name is: "+Client_Name);
   }
   
+  function ReRes(){
+    socket.emit('end',{Cond:-2});
+    window.location.reload(false);
+
+    
+  }
+  
   function BoxClicked(value){
     console.log(value + " Button clicked");
     console.log("Turn in funct is: "+turn)
@@ -84,10 +91,16 @@ export function DispBoard () {
      if (checkcond == 1){
       end_message = Player+" has won. Please restart the game to continue playing."
       set_end(end_message);
+      console.log("Win. clearing list.");
+      socket.emit('end',{Cond:checkcond});
     }
     else if (checkcond == -1){
       end_message = "A draw has been decided. Please restart the game to continue playing."
       set_end(end_message);
+      console.log("Draw. clearing list.");
+
+      socket.emit('end',{Cond:checkcond});
+
     }
     
     
@@ -146,7 +159,7 @@ export function DispBoard () {
     </div>
       ): null}
       <p><br/>{end_mes} </p>
-      <button onClick={() => window.location.reload(false)}>Click to restart game (warning, all users will need to refresh if they want to keep watching/playing)!</button>
+      <button onClick={() => ReRes()}>Click to restart game (warning, all users will need to refresh if they want to keep watching/playing)!</button>
     </div>
     
     
