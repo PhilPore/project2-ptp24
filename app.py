@@ -36,15 +36,7 @@ def on_log(data): #logic to check dictionary
     print(str(data))
     if data['user'] not in user_types:
         user_types.append(data['user'])
-    '''
-    if user_types['X'] == None:
-        user_types['X'] = data['user']
-    elif user_types['O'] == None:
-        user_types['O'] = data['user']
-    else:
-        if data['user'] != user_types['X'] or data['user'] != user_types['O']:
-            user_types['spect'].append(data['user'])
-    print(user_types)'''
+   
     socketio.emit('login', user_types, broadcast=True, include_self=True)
 # When a client emits the event 'chat' to the server, this function is run
 # 'chat' is a custom event name that we just decided
