@@ -7,10 +7,9 @@ from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv, find_dotenv
 import models
 
-
 load_dotenv(find_dotenv())
 
-USER_TYPES = [] #user list
+USER_TYPES = []  #user list
 
 app = Flask(__name__, static_folder='./build/static')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
@@ -26,12 +25,11 @@ db.create_all()
 
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
-socketio = SocketIO(
-    app,
-    cors_allowed_origins="*",
-    json=json,
-    manage_session=False
-)
+socketio = SocketIO(app,
+                    cors_allowed_origins="*",
+                    json=json,
+                    manage_session=False)
+
 
 @app.route('/', defaults={"filename": "index.html"})
 @app.route('/<path:filename>')
@@ -39,54 +37,72 @@ socketio = SocketIO(
 def index(filename):
     return send_from_directory('./build', filename)
 
+
 # When a client connects from this Socket connection, this function is run
 @socketio.on('connect')
 def on_connect():
+    '''User is connected and leaderboard is generated.'''
     print('User connected!')
     print("Printing list")
-    leaderboard = db.session.query(models.Person).order_by(models.Person.score.desc())
+    leaderboard = db.session.query(models.Person).order_by(
+        models.Person.score.desc())
     leadlist_name = []
-    leadlist_score = []
     for pers in leaderboard:
         leadlist_name.append([pers.username, pers.score])
         #leadlist_score.append([pers.score])
     #print("{}\n{}".format(leadlist_name,leadlist_score))
-    socketio.emit('leaderboard', {"names":leadlist_name})
+    socketio.emit('leaderboard', {"names": leadlist_name})
+
 
 # When a client disconnects from this Socket connection, this function is run
 @socketio.on('disconnect')
 def on_disconnect():
+    '''On user disconnect'''
     print('User disconnected!')
+
 
 @socketio.on('login')
 #Append to userlist
 def on_log(data):
+    '''Allows the user to log in. Puts them in a list.'''
     print(str(data))
     if data['user'] not in USER_TYPES:
         USER_TYPES.append(data['user'])
     flag = 0
     quer = models.Person.query.filter_by(username=data['user']).first()
-    if quer == None:
+    if quer is None:
         flag = 1
         new_user = models.Person(username=data['user'], score=100)
         db.session.add(new_user)
         db.session.commit()
-    leaderboard = db.session.query(models.Person).order_by(models.Person.score.desc())
+    leaderboard = db.session.query(models.Person).order_by(
+        models.Person.score.desc())
     lst_name = []
     for pers in leaderboard:
         lst_name.append([pers.username, pers.score])
-    socketio.emit('login', {'lst':USER_TYPES, 'flag':flag, 'names':lst_name}, broadcast=True, include_self=True)
+    socketio.emit('login', {
+        'lst': USER_TYPES,
+        'flag': flag,
+        'names': lst_name
+    },
+                  broadcast=True,
+                  include_self=True)
+
+
 # When a client emits the event 'chat' to the server, this function is run
 # 'chat' is a custom event name that we just decided
 @socketio.on('cell')
-def on_chat(data): # data is whatever arg you pass in your emit call on client
+def on_chat(data):  # data is whatever arg you pass in your emit call on client
+    '''This updates whenever the user emits. Send to other people connected to update value.'''
     print(str(data))
     # This emits the 'chat' event from the server to all clients except for
     # the client that emmitted the event that triggered this function
     socketio.emit('cell', data, broadcast=True, include_self=False)
 
+
 @socketio.on('end')
 def game_over(data):
+    '''Kills the game. Sent in by one person'''
     print(str(data))
     if data["Cond"] == 1:
         win_ind = 0
@@ -97,29 +113,35 @@ def game_over(data):
             print("Player O")
             win_ind = 1
             lose_ind = 0
-        win_quer = db.session.query(models.Person).filter_by(username=USER_TYPES[win_ind]).first()
-        win_quer.score = win_quer.score+1
+        win_quer = db.session.query(
+            models.Person).filter_by(username=USER_TYPES[win_ind]).first()
+        win_quer.score = win_quer.score + 1
         db.session.commit()
-        lose_quer = db.session.query(models.Person).filter_by(username=USER_TYPES[lose_ind]).first()
-        lose_quer.score = lose_quer.score-1
+        lose_quer = db.session.query(
+            models.Person).filter_by(username=USER_TYPES[lose_ind]).first()
+        lose_quer.score = lose_quer.score - 1
         db.session.commit()
         print(win_quer.score)
         #lose_quer.score = lose_quer.score-1
         print(lose_quer.score)
         #db.session.commit()
-        leaderboard = db.session.query(models.Person).order_by(models.Person.score.desc())
+        leaderboard = db.session.query(models.Person).order_by(
+            models.Person.score.desc())
         leadlist_name = []
         for pers in leaderboard:
             print("{} = {}".format(pers.username, pers.score))
             leadlist_name.append([pers.username, pers.score])
-        socketio.emit('upd_l', {'names':leadlist_name}, broadcast=True, include_self=True)
+        socketio.emit('upd_l', {'names': leadlist_name},
+                      broadcast=True,
+                      include_self=True)
     USER_TYPES.clear()
     print("Users cleared.")
     print(USER_TYPES)
 
+
 if __name__ == "__main__":
 
-# Note that we don't call app.run anymore. We call socketio.run with app arg
+    # Note that we don't call app.run anymore. We call socketio.run with app arg
     socketio.run(
         app,
         host=os.getenv('IP', '0.0.0.0'),
