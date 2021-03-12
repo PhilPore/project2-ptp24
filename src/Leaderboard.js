@@ -1,4 +1,4 @@
-export function Leading(props) {
+function Leading(props) {
   return (
     <li>
       {" "}
@@ -6,3 +6,5 @@ export function Leading(props) {
     </li>
   );
 }
+
+export default Leading;

@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import io from 'socket.io-client';
-import { ShowSquare } from './Square.js';
+import ShowSquare from './Square.js';
 import { CheckEnd } from './EndCheck.js';
-import { Leading } from './Leaderboard.js';
+import Leading from './Leaderboard.js';
 import './Board.css';
 
 const socket = io();
