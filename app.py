@@ -38,12 +38,15 @@ def index(filename):
     '''Index return'''
     return send_from_directory('./build', filename)
 
+
 def updt(leadboard):
     '''Returns the new db list!'''
     temp_arr = []
     for pers in leadboard:
         temp_arr.append([pers.username, pers.score])
     return temp_arr
+
+
 # When a client connects from this Socket connection, this function is run
 @socketio.on('connect')
 def on_connect():
@@ -54,11 +57,10 @@ def on_connect():
         models.Person.score.desc())
     leadlist_name = updt(leaderboard)
     #for pers in leaderboard:
-        #leadlist_name.append([pers.username, pers.score])
-        #leadlist_score.append([pers.score])
+    #leadlist_name.append([pers.username, pers.score])
+    #leadlist_score.append([pers.score])
     #print("{}\n{}".format(leadlist_name,leadlist_score))
     socketio.emit('leaderboard', {"names": leadlist_name})
-    
 
 
 # When a client disconnects from this Socket connection, this function is run
@@ -67,15 +69,20 @@ def on_disconnect():
     '''On user disconnect'''
     print('User disconnected!')
 
+
 def handle_users(data):
     '''Is my user in my list? I know this can be done via if statement in the function, but gotta bs somehow'''
     return True if data['user'] not in USER_TYPES else False
+
+
 def add_new_user(data):
     '''adds the new user to the db'''
     new_user = models.Person(username=data['user'], score=100)
     db.session.add(new_user)
     db.session.commit()
     return new_user
+
+
 @socketio.on('login')
 #Append to userlist
 def on_log(data):
@@ -112,6 +119,7 @@ def on_chat(data):  # data is whatever arg you pass in your emit call on client
     # the client that emmitted the event that triggered this function
     socketio.emit('cell', data, broadcast=True, include_self=False)
 
+
 def get_indexes(data):
     '''Get the winner and loser index'''
     win_arr = []
@@ -120,6 +128,8 @@ def get_indexes(data):
     elif data["player"] == USER_TYPES[1]:
         win_arr = [1, 0]
     return win_arr
+
+
 @socketio.on('end')
 def game_over(data):
     '''Kills the game. Sent in by one person'''
@@ -164,4 +174,3 @@ if __name__ == "__main__":
         host=os.getenv('IP', '0.0.0.0'),
         port=8081 if os.getenv('C9_PORT') else int(os.getenv('PORT', 8081)),
     )
-    
