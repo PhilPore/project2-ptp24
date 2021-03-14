@@ -1,10 +1,10 @@
 import './Board.css';
 
 function ShowSquare(props) {
-  const { val, cell } = props;
-  
+  const { val, cell, Clickbox } = props;
+
   return (
-    <div className="box" onClick={() => props.Clickbox(val)}>
+    <div className="box" role="switch" onClick={() => Clickbox(val)}>
       {' '}
       {cell}
       {' '}

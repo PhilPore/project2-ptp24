@@ -57,7 +57,15 @@ class UserInds(unittest.TestCase):
                 "player": "Stewart"
             },
             KEY_EXPECTED: [1, 0]
-        }]
+        },
+        {
+            KEY_INPUT: {
+                "player": "Johnny"
+            },
+            KEY_EXPECTED: []
+            
+        }
+        ]
 
     def test_ind_success(self):
         '''Test get indexes'''
@@ -68,7 +76,8 @@ class UserInds(unittest.TestCase):
             actual_result = get_indexes(test[KEY_INPUT])
             expected_result = test[KEY_EXPECTED]
             self.assertEqual(actual_result, expected_result)
-            self.assertEqual(expected_result, actual_result)
+            self.assertEqual(len(expected_result), len(actual_result))
+           
 
 
 if __name__ == '__main__':
