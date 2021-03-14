@@ -1,11 +1,10 @@
-
+'''Reserved for unit testing.'''
 import unittest
 import models
-from app import get_indexes, handle_users, updt
+from app import get_indexes, handle_users
+import app
 
-USER_TYPES = ["Martha"]
-LEADERBOARD =[{"username":"a", "score" :1},{"username":"b", "score" :1}]
-
+LEADERBOARD = [{"username":"a", "score" :1}, {"username":"b", "score" :1}]
 KEY_INPUT = "input"
 KEY_EXPECTED = "expected"
 KEY_LENGTH = "length"
@@ -14,59 +13,57 @@ KEY_SECOND_WORD = "second_word"
 
 # "String1 String2 String3".split() => ['String1', 'String2', 'String3']
 
-class SplitTestCase(unittest.TestCase):
+class UserNoExist(unittest.TestCase):
+    '''Tests the bool check to see if a user exists in the list'''
     def setUp(self):
         self.success_test_params = [
             {
                 KEY_INPUT: {"user":"John"},
-                KEY_EXPECTED: ["Martha","John"],
+                KEY_EXPECTED: True,
             },
             {
                 KEY_INPUT: {"user":"Jo"},
-                KEY_EXPECTED: ["Martha", "John","Jo"]
+                KEY_EXPECTED: True
             },
             {
                 KEY_INPUT: {"user":"Jill"},
-                KEY_EXPECTED: ["Martha", "John","Jo","Jill"]
+                KEY_EXPECTED: True
             }
-            # TODO add another
         ]
-    ''''    
-        self.failure_test_params = [
+
+
+    def test_user_success(self):
+        '''Tests user success'''
+        for test in self.success_test_params:
+            print(test[KEY_INPUT])
+            actual_result = handle_users(test[KEY_INPUT])
+            expected_result = test[KEY_EXPECTED]
+            self.assertEqual(actual_result, expected_result)
+            self.assertEqual(expected_result, actual_result)
+
+class UserInds(unittest.TestCase):
+    '''Tests winner and loser user indexes'''
+    def setUp(self):
+        self.success_test_params = [
             {
-                KEY_INPUT: "Martha",
-                KEY_EXPECTED: ["Martha", "John","Jo"],
+                KEY_INPUT: {"player":"Martha"},
+                KEY_EXPECTED: [0, 1],
             },
             {
-                KEY_INPUT: "Glass Animals",
-                KEY_EXPECTED: ['Glasss', 'Animal', 's'],
+                KEY_INPUT: {"player":"Stewart"},
+                KEY_EXPECTED: [1, 0]
             }
-            # TODO add another
-        ]'''
+        ]
+    def test_ind_success(self):
+        '''Test get indexes'''
+        app.USER_TYPES = ["Martha", "Stewart", "Johnny"]
 
-
-    def test_split_success(self):
         for test in self.success_test_params:
-            actual_result = handle_users(test[KEY_INPUT])
-            
+            print(test[KEY_INPUT])
+            actual_result = get_indexes(test[KEY_INPUT])
             expected_result = test[KEY_EXPECTED]
-            
-            self.assertEqual(len(actual_result), len(expected_result))
-            self.assertEqual(actual_result[0], expected_result[0])
-            self.assertEqual(actual_result[1], expected_result[1])
-'''            
-    def test_split_failure(self):
-        for test in self.failure_test_params:
-            actual_result = test[KEY_INPUT].split()
-            
-            expected_result = test[KEY_EXPECTED]
-            
-            self.assertNotEqual(len(actual_result), len(expected_result))
-            self.assertNotEqual(actual_result[0], expected_result[0])
-'''
-
+            self.assertEqual(actual_result, expected_result)
+            self.assertEqual(expected_result, actual_result)
+        
 if __name__ == '__main__':
     unittest.main()
-
-
-

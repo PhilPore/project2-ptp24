@@ -70,6 +70,12 @@ def on_disconnect():
 def handle_users(data):
     '''Is my user in my list? I know this can be done via if statement in the function, but gotta bs somehow'''
     return True if data['user'] not in USER_TYPES else False
+def add_new_user(data):
+    '''adds the new user to the db'''
+    new_user = models.Person(username=data['user'], score=100)
+    db.session.add(new_user)
+    db.session.commit()
+    return new_user
 @socketio.on('login')
 #Append to userlist
 def on_log(data):
@@ -81,9 +87,7 @@ def on_log(data):
     quer = models.Person.query.filter_by(username=data['user']).first()
     if quer is None:
         flag = 1
-        new_user = models.Person(username=data['user'], score=100)
-        db.session.add(new_user)
-        db.session.commit()
+        add_new_user(data)
     leaderboard = db.session.query(models.Person).order_by(
         models.Person.score.desc())
     lst_name = []
