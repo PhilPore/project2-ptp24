@@ -65,13 +65,18 @@ class GenList(unittest.TestCase):
             {
                 KEY_EXPECTED: [INITIAL_USERNAME],
             },
+             {
+                KEY_EXPECTED: [INITIAL_USERNAME],
+            }
         ]
         
         initial_person = models.Person(username=INITIAL_USERNAME, score=100)
         self.initial_db_mock = [initial_person]
     
-    def mocked_db_session_add(self, username):
-        self.initial_db_mock.append(username)
+    def mocked_db_session_que(self,user):
+        return self.initial_db_mock
+    def mocked_db_session_order(self,data):
+        pass
     
     def mocked_db_session_commit(self):
         pass
@@ -81,21 +86,24 @@ class GenList(unittest.TestCase):
     
     def test_success(self):
         for test in self.success_test_params:
-            with patch('app.DB.session.add', self.mocked_db_session_add):
-                with patch('app.DB.session.commit', self.mocked_db_session_commit):
-                    with patch('models.Person.query.filter_by') as mocked_query:
-                        mocked_query.all = self.mocked_person_query_all
-    
-                        print(self.initial_db_mock)
-                        actual_result = generate_list()
-                        print("-")
-                        print(actual_result)
-                        print("-")
-                        expected_result = test[KEY_EXPECTED]
-                        print(self.initial_db_mock)
-                        print(expected_result)
+            
+            with patch('app.DB.session.query') as mocked_query:
+                print("----------")
+                mocked_query.all = self.mocked_person_query_all
+                mocked_query.order_by = self.mocked_db_session_que(0)
+                print(mocked_query.order_by)
+                print("-^-")
+                #print(self.initial_db_mock)
+                actual_result = generate_list()
+                print("-")
+                print(actual_result)
+                print("-")
+                expected_result = test[KEY_EXPECTED]
+                print(self.initial_db_mock)
+                print(expected_result)
                         
-                        self.assertEqual(len(actual_result[0]),2)
-                        #self.assertEqual(actual_result[0].score, expected_result[0].score)
+                self.assertEqual(len(mocked_query.order_by),len(expected_result))
+                self.assertEqual(mocked_query.order_by[0].username,expected_result[0])
+                #self.assertEqual(actual_result[0].score, expected_result[0].score)
 if __name__ == '__main__':
     unittest.main()
