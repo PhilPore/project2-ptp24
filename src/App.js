@@ -1,6 +1,7 @@
 import './App.css';
 // import { Listitem } from './listitem.js';
-import { DispBoard } from './Board';
+import React from 'react';
+import DispBoard from './Board';
 import './Board.css';
 
 function App() {

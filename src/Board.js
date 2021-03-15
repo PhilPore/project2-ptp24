@@ -1,15 +1,15 @@
-import { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import io from 'socket.io-client';
-import ShowSquare from './Square.js';
-import { CheckEnd } from './EndCheck.js';
-import Leading from './Leaderboard.js';
+import ShowSquare from './Square';
+import { CheckEnd } from './EndCheck';
+import Leading from './Leaderboard';
 import './Board.css';
 
 const socket = io();
-export function DispBoard() {
+function DispBoard() {
   let marker = '';
-  let end_message = '';
-  const [end_mes, set_end] = useState('');
+  let endMessage = '';
+  const [endMes, setEnd] = useState('');
   const [board, setBoard] = useState([
     ' ',
     ' ',
@@ -27,11 +27,9 @@ export function DispBoard() {
   const [Users, setUsers] = useState([]);
   const [ShowDB, SetShow] = useState(false);
   const [Leaderboard, setLead] = useState([]);
-  const [LeadScores, setScores] = useState([]);
-
   // index 0 and 1 are player 1 and player 2, turns can alternate by doing a modulo 2 op
-  const [user_logged, set_log] = useState(false); // if this is false that means no one logged in.
-  let Client_Name;
+  const [userlogged, setlog] = useState(false); // if this is false that means no one logged in.
+  let clientName;
   const [Player, setPlayer] = useState('');
 
   function ShowLeader() {
@@ -40,17 +38,17 @@ export function DispBoard() {
 
   function Logged() {
     console.log('In logged function');
-    if (inputRef != null && !user_logged) {
+    if (inputRef != null && !userlogged) {
       const username = inputRef.current.value;
-      Client_Name = username;
-      set_log((prevlog) => true);
+      clientName = username;
+      setlog(true);
       setPlayer(username);
-      console.log(`Is user now: ${user_logged}`);
+      console.log(`Is user now: ${userlogged}`);
       console.log(`username: ${username}`);
       console.log('Now emitting to socket, username');
       socket.emit('login', { user: username });
     }
-    console.log(`Client name is: ${Client_Name}`);
+    console.log(`Client name is: ${clientName}`);
   }
 
   function ReRes() {
@@ -70,7 +68,8 @@ export function DispBoard() {
     if (Win === 1) {
       console.log('Someone won. Terminating function.');
       return;
-    } if (Win === -1) {
+    }
+    if (Win === -1) {
       console.log('Draw. Terminating function.');
       return;
     }
@@ -101,26 +100,26 @@ export function DispBoard() {
     console.log(`Win condition is: ${Win}`);
     // check the win condition to  format message.
     if (checkcond === 1) {
-      end_message = `${Player} has won. Please restart the game to continue playing.`;
-      set_end(end_message);
+      endMessage = `${Player} has won. Please restart the game to continue playing.`;
+      setEnd(endMessage);
       console.log('Win. clearing list.');
       socket.emit('end', { Cond: checkcond, player: Player });
     } else if (checkcond === -1) {
-      end_message = 'A draw has been decided. Please restart the game to continue playing.';
-      set_end(end_message);
+      endMessage = 'A draw has been decided. Please restart the game to continue playing.';
+      setEnd(endMessage);
       console.log('Draw. clearing list.');
 
       socket.emit('end', { Cond: checkcond, player: Player });
     }
 
-    const ind_val = value;
-    console.log(`Emitting: ${ind_val} | ${board[ind_val]}`);
+    const indval = value;
+    console.log(`Emitting: ${indval} | ${board[indval]}`);
     socket.emit('cell', {
-      pos: ind_val,
+      pos: indval,
       bcell: marker,
       upd_tur: turn + 1,
       end: 0 + checkcond,
-      e_mes: end_message,
+      e_mes: endMessage,
     });
     console.log('Data emitted.');
   }
@@ -128,15 +127,15 @@ export function DispBoard() {
   useEffect(() => {
     socket.on(
       'login',
-      (user_types) => {
+      (usertypes) => {
         console.log('Login data recieved');
-        console.log(user_types);
-        setUsers(user_types.lst);
-        console.log(`User type length is: ${user_types.length}`);
+        console.log(usertypes);
+        setUsers(usertypes.lst);
+        console.log(`User type length is: ${usertypes.length}`);
         console.log(Users);
         console.log(Users.length);
-        if (user_types.flag === 1) {
-          setLead(user_types.names);
+        if (usertypes.flag === 1) {
+          setLead(usertypes.names);
         }
       },
       [],
@@ -173,19 +172,19 @@ export function DispBoard() {
       });
       setTurn(data.upd_tur);
       setWin(data.end);
-      set_end(data.e_mes);
-      end_message = data.e_mes;
+      setEnd(data.e_mes);
+      endMessage = data.e_mes;
       console.log(`upd: Turn is ${turn}`);
     });
   }, []);
 
-  console.log(`EEE${end_message}`);
+  console.log(`EEE${endMessage}`);
   return (
     <div>
       Enter Username:
       {' '}
       <input ref={inputRef} type="text" />
-      <button onClick={Logged}>Login</button>
+      <button type="button" onClick={Logged}>Login</button>
       <div>
         <ul>
           {' '}
@@ -198,7 +197,7 @@ export function DispBoard() {
           {' '}
         </ul>
       </div>
-      {user_logged === true ? (
+      {userlogged === true ? (
         <div className="board">
           {board.map((cellval, index) => (
             <ShowSquare Clickbox={BoxClicked} val={index} cell={cellval} />
@@ -207,14 +206,14 @@ export function DispBoard() {
       ) : null}
       <p>
         <br />
-        {end_mes}
+        {endMes}
         {' '}
       </p>
-      <button onClick={() => ReRes()}>
+      <button type="button" onClick={() => ReRes()}>
         Click to restart game (warning, all users will need to refresh if they
         want to keep watching/playing)!
       </button>
-      <button onClick={() => ShowLeader()}> Show/Hide Leaderboard </button>
+      <button type="button" onClick={() => ShowLeader()}> Show/Hide Leaderboard </button>
       {ShowDB === true ? (
         <div>
           <ul>
@@ -227,3 +226,5 @@ export function DispBoard() {
     </div>
   );
 }
+
+export default DispBoard;
