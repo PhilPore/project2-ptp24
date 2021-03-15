@@ -1,10 +1,22 @@
+import React from 'react';
+import PropTypes from 'prop-types';
+
 function Leading(props) {
+  const { name } = props;
   return (
     <li>
-      {" "}
-      {props.name[0]} | {props.name[1]}{" "}
+      {' '}
+      {name[0]}
+      {' '}
+      |
+      {name[1]}
+      {' '}
     </li>
   );
 }
+Leading.propTypes = {
+  name: PropTypes.any.isRequired,
+
+};
 
 export default Leading;

@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import io from 'socket.io-client';
 import ShowSquare from './Square';
-import { CheckEnd } from './EndCheck';
+import CheckEnd from './EndCheck';
 import Leading from './Leaderboard';
 import './Board.css';
 
